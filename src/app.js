@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const transactionsRoutes = require('./routes/transactionsRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/transactions', transactionsRoutes);
+app.use('/categories', categoryRoutes);
 
 const PORT = process.env.PORT || 3001;
 
