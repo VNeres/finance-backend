@@ -2,18 +2,24 @@ const db = require('../database');
 
 exports.getAllTransactions = (req, res) => {
   const transactions = db.prepare('SELECT * FROM transactions').all();
-  res.json(transactions);
+
+  const normalized = transactions.map(t => ({
+    ...t,
+    isCreditCard: !!t.isCreditCard,
+  }));
+
+  res.json(normalized);
 };
 
 exports.createTransaction = (req, res) => {
-  const { title, amount, type, category, date } = req.body;
-  
+  const { title, amount, type, category, date, isCreditCard } = req.body;
+
   const stmt = db.prepare(`
-    INSERT INTO transactions (title, amount, type, category, date)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO transactions (title, amount, type, category, date, isCreditCard)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
-  
-  const info = stmt.run(title, amount, type, category, date);
+
+  const info = stmt.run(title, amount, type, category, date, isCreditCard ? 1 : 0);
 
   const newTransaction = {
     id: info.lastInsertRowid,
@@ -21,7 +27,8 @@ exports.createTransaction = (req, res) => {
     amount,
     type,
     category,
-    date
+    date,
+    isCreditCard: !!isCreditCard,
   };
 
   res.status(201).json(newTransaction);

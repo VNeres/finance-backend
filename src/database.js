@@ -13,4 +13,7 @@ db.prepare(`
   )
 `).run();
 
+db.prepare(`ALTER TABLE transactions ADD COLUMN isCreditCard BOOLEAN DEFAULT 0`).run();
+
+
 module.exports = db;
